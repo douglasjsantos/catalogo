@@ -1,5 +1,6 @@
 package br.com.douglas.Catalogo.controller;
 
+import br.com.douglas.Catalogo.dto.CategoryDTO;
 import br.com.douglas.Catalogo.entities.Category;
 import br.com.douglas.Catalogo.entities.Pessoa;
 import br.com.douglas.Catalogo.services.CategoryService;
@@ -21,9 +22,9 @@ public class CategoryController {
 
 
     @GetMapping
-    public ResponseEntity<List<Category>> findAll(){
+    public ResponseEntity<List<CategoryDTO>> findAll(){
 
-        List<Category> list = service.findAll();
+        List<CategoryDTO> list = service.findAll();
 
         return ResponseEntity.ok().body(list);
     }
