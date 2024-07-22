@@ -2,14 +2,13 @@ package br.com.douglas.Catalogo.services;
 
 import br.com.douglas.Catalogo.dto.CategoryDTO;
 import br.com.douglas.Catalogo.entities.Category;
-import br.com.douglas.Catalogo.entities.Pessoa;
 import br.com.douglas.Catalogo.repositories.CategoryRespository;
-import br.com.douglas.Catalogo.services.services.exceptions.EntityNotFoundException;
+import br.com.douglas.Catalogo.services.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryDTO findById(Long id){
        Optional<Category> obj = repository.findById(id);
-       Category entity = obj.orElseThrow(()-> new EntityNotFoundException("Entity not found."));
+       Category entity = obj.orElseThrow(()-> new ResourceNotFoundException("Entity not found."));
 
        return new CategoryDTO(entity.getId(),entity.getName());
     }
@@ -51,5 +50,27 @@ public class CategoryService {
         repository.save(entity);
 
         return new CategoryDTO(entity.getId(), entity.getName());
+    }
+
+    @Transactional
+    public CategoryDTO update(Long id, CategoryDTO dto) {
+        // Buscar a categoria pelo ID fornecido
+        Optional<Category> optionalCategory = repository.findById(id);
+
+        // Verificar se a categoria existe
+        if (optionalCategory.isEmpty()) {
+            throw new EntityNotFoundException("Category not found.");
+        }
+
+        // Atualizar os campos da categoria
+        Category categoryToUpdate = optionalCategory.get();
+        categoryToUpdate.setName(dto.name());
+
+        // Salvar a categoria atualizada
+        repository.save(categoryToUpdate);
+
+        // Retornar um DTO da categoria atualizada
+        return new CategoryDTO(categoryToUpdate.getId(), categoryToUpdate.getName());
+
     }
 }

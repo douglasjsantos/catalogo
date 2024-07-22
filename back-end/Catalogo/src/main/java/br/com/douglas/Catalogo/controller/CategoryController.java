@@ -1,17 +1,13 @@
 package br.com.douglas.Catalogo.controller;
 
 import br.com.douglas.Catalogo.dto.CategoryDTO;
-import br.com.douglas.Catalogo.entities.Category;
-import br.com.douglas.Catalogo.entities.Pessoa;
 import br.com.douglas.Catalogo.services.CategoryService;
-import br.com.douglas.Catalogo.services.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -44,6 +40,13 @@ public class CategoryController {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
                 .buildAndExpand(dto.id()).toUri();
         return ResponseEntity.created(uri).body(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @RequestBody CategoryDTO dto){
+        dto = service.update(id,dto);
+
+        return ResponseEntity.ok().body(dto);
     }
 
 
