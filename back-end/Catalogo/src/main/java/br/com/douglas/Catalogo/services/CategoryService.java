@@ -8,6 +8,8 @@ import br.com.douglas.Catalogo.services.services.exceptions.ResourceNotFoundExce
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +27,13 @@ public class CategoryService {
     // Transactional props do bd, ACID ou faz tudo ou faz nd etc
     // readOnly não da looking no banco de dados (leitura sempre coloque)
     @Transactional(readOnly = true)
-    public List<CategoryDTO> findAll(){
-        return repository.findAll()
-                .stream()
+    public Page<CategoryDTO> findAllPaged(PageRequest pageRequest){
+        Page<Category> list = repository.findAll(pageRequest);
+        return list
                 .map(category -> new CategoryDTO(
                         category.getId(),
                         category.getName()
-                )).collect(Collectors.toList());
+                ));
 
     }
 
