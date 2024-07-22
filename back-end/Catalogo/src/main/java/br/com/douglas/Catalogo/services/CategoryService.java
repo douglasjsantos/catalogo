@@ -43,4 +43,13 @@ public class CategoryService {
     }
 
 
+    @Transactional
+    public CategoryDTO insert(CategoryDTO dto) {
+        Category entity = new Category();
+        entity.setName(dto.name()); // Correção aqui: usar o nome do DTO para definir o nome da entidade
+
+        repository.save(entity);
+
+        return new CategoryDTO(entity.getId(), entity.getName());
+    }
 }
