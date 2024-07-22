@@ -3,10 +3,13 @@ package br.com.douglas.Catalogo.services;
 import br.com.douglas.Catalogo.dto.CategoryDTO;
 import br.com.douglas.Catalogo.entities.Category;
 import br.com.douglas.Catalogo.repositories.CategoryRespository;
+import br.com.douglas.Catalogo.services.services.exceptions.DataBaseException;
 import br.com.douglas.Catalogo.services.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -72,5 +75,17 @@ public class CategoryService {
         // Retornar um DTO da categoria atualizada
         return new CategoryDTO(categoryToUpdate.getId(), categoryToUpdate.getName());
 
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void delete(Long id) {
+        if(!repository.existsById(id)){
+            throw new ResourceNotFoundException("Resource not found");
+        }
+        try{
+            repository.deleteById(id);
+        }catch (DataIntegrityViolationException e){
+            throw new DataBaseException("Referential integrity violation");
+        }
     }
 }
