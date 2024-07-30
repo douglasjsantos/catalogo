@@ -1,6 +1,8 @@
 package br.com.douglas.Catalogo.services;
 
+import br.com.douglas.Catalogo.dto.CategoryDTO;
 import br.com.douglas.Catalogo.dto.ProductDTO;
+import br.com.douglas.Catalogo.entities.Category;
 import br.com.douglas.Catalogo.entities.Product;
 import br.com.douglas.Catalogo.repositories.ProductRepository;
 import br.com.douglas.Catalogo.services.services.exceptions.DataBaseException;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +28,8 @@ public class ProductService {
     // Transactional props do bd, ACID ou faz tudo ou faz nd etc
     // readOnly não da looking no banco de dados (leitura sempre coloque)
     @Transactional(readOnly = true)
-    public Page<ProductDTO> findAllPaged(PageRequest pageRequest){
-        Page<Product> list = repository.findAll(pageRequest);
+    public Page<ProductDTO> findAllPaged(Pageable pageable){
+        Page<Product> list = repository.findAll(pageable);
         return list.map(product -> new ProductDTO(product));
 
     }
@@ -57,6 +60,7 @@ public class ProductService {
     @Transactional
     public ProductDTO insert(ProductDTO dto) {
         Product entity = new Product();
+
         entity.setName(dto.getName()); // Correção aqui: usar o nome do DTO para definir o nome da entidade
 
         repository.save(entity);
@@ -64,10 +68,13 @@ public class ProductService {
         return new ProductDTO(entity.getId(), entity.getName(),entity.getDescription(),entity.getPrice(),entity.getImgUrl(),entity.getDate());
     }
 
+
+
     @Transactional
     public ProductDTO update(Long id, ProductDTO dto) {
         // Buscar a categoria pelo ID fornecido
         Optional<Product> optionalProduct = repository.findById(id);
+
 
         // Verificar se a categoria existe
         if (optionalProduct.isEmpty()) {
@@ -97,4 +104,6 @@ public class ProductService {
             throw new DataBaseException("Referential integrity violation");
         }
     }
+
+
 }
